@@ -1,0 +1,40 @@
+---
+title: "Automated Analysis Pipeline for Viral Nanopore Sequencing Data"
+author: "Ivanna Marchesini"
+format: html
+editor: visual
+---
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+# Introduction
+
+This pipeline performs automated processing and analysis of viral sequencing data generated using Oxford Nanopore Technologies (ONT). Steps include quality control, basecalling, read filtering, genome assembly, and result visualization.
+
+# Pipeline Steps
+
+## 1. Input Data
+
+The first step in the pipeline involves downloading the `.pod5` raw signal files from the MinION device. This requires remote access to the sequencing machine via SSH.
+
+### 1.1 Accessing the MinION via SSH
+
+You can access the MinION device using the following credentials:
+
+-   **Host name**: `MC-115199`
+-   **IP address**: `10.212.1.44`
+
+There are two user options for SSH login:
+
+**a. Default user**\
+ssh minit\@10.212.1.44 password: minit
+
+**b. Personal User** ssh imarches\@10.212.1.44 password: \[your personal password\]
+
+after running the chunck above you will be asked to enter the password. Use a personal password or the default one.
+
+```{bash}
+#| eval: false
+# This command connects to the MinION device (run in terminal, not in Quarto)
+ssh imarches@10.212.1.44
+```
