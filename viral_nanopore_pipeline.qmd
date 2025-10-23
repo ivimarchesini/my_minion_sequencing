@@ -26,15 +26,63 @@ You can access the MinION device using the following credentials:
 
 There are two user options for SSH login:
 
-**a. Default user**\
-ssh minit\@10.212.1.44 password: minit
-
-**b. Personal User** ssh imarches\@10.212.1.44 password: \[your personal password\]
-
-after running the chunck above you will be asked to enter the password. Use a personal password or the default one.
-
-```{bash}
-#| eval: false
-# This command connects to the MinION device (run in terminal, not in Quarto)
-ssh imarches@10.212.1.44
+```         
+ssh minit@10.212.1.44
 ```
+
+password: minit
+
+This command connects to the MinION device (run in terminal, not in Quarto)
+
+**b. Personal User**
+
+```         
+ ssh imarches@10.212.1.44 
+```
+
+password: \[your personal password\]
+
+after running the command above you will be asked to enter the password. Use a personal password or the default one.
+
+This command connects to the MinION device (run in terminal, not in Quarto)
+
+### 1.2 Navigate to the Sequencing Data in Minion Nanopore
+
+```         
+cd/data/run_20250803/no_sample_id/20250803_1227_MC-115199_AYL450_752e4334/pod5_pass/
+```
+
+List the available barcode folders and other directories:
+
+```         
+ls
+```
+
+| Output: barcode01 barcode02 barcode03 barcode07 barcode08 barcode09 barcode10 barcode11 barcode12 barcode13 barcode14 barcode15 barcode16 barcode17 barcode18 barcode19 barcode20 barcode21 barcode22 barcode23 barcode24 mixed unclassified
+
+## Copy Data
+
+Either copy the data with WinSCP to the computer or send it direct to Ramses using this following command:
+
+```         
+scp -r /data/run_20250803/no_sample_id/20250803_1227_MC-115199_AYL450_752e4334/pod5_pass imarches@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/input/
+```
+
+## Log in to Ramses
+
+Run the following command to log in:
+
+```         
+ssh imarches@ramses4.itcc.uni-koeln.de
+```
+
+You will be prompted to :
+
+1.  Enter your SSH key passphrase
+2.  Complete Duo two-factor authentication. You will see a prompt like this:
+
+| Duo two-factor login for imarches
+| Enter a passcode or select one of the following options:
+| Duo Push to +XX XXX XXX9171 Passcode or option (1-1): (Hier you have to write the code that appears in your Duo app) Once authenticated successfully, you will see: Success. Logging you in...
+
+Now are you logged into the server and can proceed with basecalling
