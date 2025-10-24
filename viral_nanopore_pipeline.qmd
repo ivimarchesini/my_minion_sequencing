@@ -86,3 +86,11 @@ You will be prompted to :
 | Duo Push to +XX XXX XXX9171 Passcode or option (1-1): (Hier you have to write the code that appears in your Duo app) Once authenticated successfully, you will see: Success. Logging you in...
 
 Now are you logged into the server and can proceed with basecalling
+
+# Ramses Set Up for basecalling
+
+1.  Check job status
+
+```         
+sacct --format="JobID,ReqCPUS,UserCPU,Elapsed,ReqMem,MaxRSS,JobName%20,Stat"
+```
