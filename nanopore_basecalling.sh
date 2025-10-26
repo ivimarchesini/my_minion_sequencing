@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Run this script with `./nanopore_basecalling.sh` in the terminal after login to ramses.
+# Run this script with ./nanopore_basecalling.sh in the terminal after login to ramses.
 
 # ramses: ssh mpirkl1@ramses4.itcc.uni-koeln.de
 # minit: ssh mpirkl1@10.212.1.44
