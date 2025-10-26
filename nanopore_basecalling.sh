@@ -31,24 +31,30 @@ sacct --format="JobID,ReqCPUS,UserCPU,Elapsed,ReqMem,MaxRSS,JobName%20,Stat"
 # check for reference and genes file and check for samplesheet
 # make executeable
 
-# Use interac
+# Use interactive mode by default
 interactive=1
 
+# change into projects virology folder  (ramses storage)
 cd /projects/virology/
 
+# This is a sample of a variable to set before running the script. This set's the input folder with the pod5 files from minion.
 # input=nanopore/input/run_20250716/ # do not edit, but set input=... manually in the terminal
 
+# Here the scripts asks for user input of the input path above. User should write run_20250716 and confirm with RETURN
 read -p "Enter project directory: " input
 
+# If inpute was set the input path prepends "nanopore/input/<userinput>"
 if [ ! -d "$input" ]; then
   input=nanopore/input/$input
 fi
 
+# Check if the directory exists (to check if user input makes sense)
 if [ ! -d "$input" ]; then
   echo "Directory does not exists on this path."
   exit 1
 fi
 
+# Setting some variables for later use with the $variablename syntax:
 kit=SQK-NBD114-24
 large=1 # > 10gb?
 cpu=0
@@ -56,10 +62,12 @@ qscore=9
 phredscore=30
 min_coverage=500
 
+# Interactive is probably set to one so large is set to 1
 if (( interactive == 1 )); then
   large=1
 fi
 
+# These are positional arguments to be used like this when running the script ./nanopore_basecalling.sh input kit ref large cpu regions qscore phredscore interactive
 # this is used once a script is ready
 # input=$1
 # kit=$2
@@ -73,23 +81,32 @@ fi
 
 # the rest is static
 
+# again switching to the virology folder
 cd /projects/virology/
 project=${input/nanopore\/input\//}
 project=${project/\//}
 
+# changing user and group permission of the files in the project to current user and virology group
 chown -R $USER:virology nanopore/input/$project
+# make all files group read and writeable
 chmod -R 775 nanopore/input/$project
 
+# set models path
 models=nanopore/models/
+# set output path
 output=nanopore/output/$project
+# again switching to the virology folder
 
 cd /projects/virology/
 mkdir nanopore/output/$project
+# again switching to the virology folder
 
 cd /projects/virology/
+# creating scratch folders (to be deleted after run)
 mkdir /scratch/virology
 mkdir /scratch/virology/logs
 
+# Load required modules to run dorado (specific to Ramses and SLURM)
 module load bio/BEDTools/2.31.0-GCC-12.3.0
 module load bio/SAMtools/1.18-GCC-12.3.0
 module load bio/BCFtools/1.18-GCC-12.3.0
