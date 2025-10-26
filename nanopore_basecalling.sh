@@ -34,7 +34,7 @@ sacct --format="JobID,ReqCPUS,UserCPU,Elapsed,ReqMem,MaxRSS,JobName%20,Stat"
 # Use interactive mode by default
 interactive=1
 
-# change into projects virology folder  (ramses storage)
+# change into /projects/virology folder  (ramses storage)
 cd /projects/virology/
 
 # This is a sample of a variable to set before running the script. This set's the input folder with the pod5 files from minion.
