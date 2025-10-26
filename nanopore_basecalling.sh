@@ -120,49 +120,65 @@ PATH=$PATH:/home/mpirkl1/micromamba/bin/
 
 # start computation
 
+# samplesheet is expected to be in the input folder with a .csv file ending
 samplesheet=$(echo $input*.csv)
 
+# $cpu is set to zero so it should take jump into the else block
 if (( $cpu==1 )); then
   large=1
   device="cpu"
   partition="-c 10"
   mem=1024gb
 else
+  # set devices to any CUDA (GPU) type.
   device="cuda:all"
+  # Use the GPU partition with one GPU,
   partition="-p gpu --gpus=1 "
+  # Use 16gb of memory for the job (on the node so system memory not GPU)
   mem=16gb # mem=4gb
 fi
 
+# set the maximum amout of time before canceling the job.
 time=04:00:00 # time=00:30:00
 
 # dorado basecalling and alignment
 
+# large is probably set to 1 (see above)
 if (( $large == 1 )); then
 
   pat0=nanopore/input/$project/barcode13/
 
+  iterate over all subfolders int the project input directory (/projects/virology/nanopore/input/run_20250713/<barcode1-13>)
   for pat0 in ${input}*/; do
     pat=${pat0/$input/}
+    # print current folder
     echo $pat
+    # Read barcode from samplesheet
     ref=$(Rscript -e "df <- read.csv('$samplesheet');virus<-df[which(df[,'barcode']=='${pat///}'),'virus'];paste0('ref_',virus,'.fasta')")
     ref=${ref//\"}
     ref=${ref//\[}
     ref=${ref//\]}
     ref=${ref/1/}
     ref=${ref/ /}
+    # Read id from samplesheet
     id=$(Rscript -e "df <- read.csv('$samplesheet');id<-df[which(df[,'barcode']=='${pat///}'),'id'];id")
     id=${id//\"}
     id=${id//\[}
     id=${id//\]}
     id=${id/1/}
     id=${id/ /}
+    # create output folder
     mkdir $output/$id
+    # perpare dorado command to execute
     cmd="dorado/bin/dorado basecaller sup "${pat0}" -r --device "$device" -o "${output}/$id" --models-directory "${models}" --min-qscore ${qscore} --kit-name "${kit}" --reference "${ref}
+    # print ID from samplesheet
     echo $id
+
+    # interactive probably set to 1 so we expect do be inside an interactive ramses/SLURM session already (Nvidia A30 GPU)
     if (( $interactive == 1 )); then
       $cmd
     else
-      sbatch -A virology $partition--mem=$mem -t ${time} -e /scratch/virology/logs/nanopore.$project.${pat///}.$(date +%F).error.txt -o /scratch/virology/logs/nanopore.$project.${pat///}.$(date +%F).output.txt -J nanopore.$project.${pat///}.$(date +%F) --wrap="$cmd"
+      sbatch -A virology $partition --mem=$mem -t ${time} -e /scratch/virology/logs/nanopore.$project.${pat///}.$(date +%F).error.txt -o /scratch/virology/logs/nanopore.$project.${pat///}.$(date +%F).output.txt -J nanopore.$project.${pat///}.$(date +%F) --wrap="$cmd"
     fi
   done
 
@@ -255,9 +271,11 @@ Rscript -e 'folders <- list.files(paste0("nanopore/output/'$project'/")); for (b
 
 Rscript -e 'library(seqinr); folders <- list.files(paste0("nanopore/output/'$project'/")); for (barcode in folders) {; files <- list.files(paste0("nanopore/output/'$project'/",barcode,"/")); for (file in files) {; if (length(grep("\\.fasta",file))>0) {; fasta <- read.fasta(paste0("nanopore/output/'$project'/",barcode,"/",file)); names(fasta) <- paste0(barcode,"_",names(fasta)); write.fasta(fasta,names=names(fasta),file=paste0("nanopore/output/'$project'/",barcode,"/",file)); } } }'
 
+# Setting owner, rights and permission of the output files to virology user group
 chown -R $USER:virology nanopore/output/$project # give write access to virology group
 chmod -R 775 nanopore/output/$project
 
+# this exit command exits this script with a non-zero exit code indicating that an error orccured although everything looks fine.
 exit 1 # THIS IS THE END
 
 # some temp code helper code (DO NOT EXECUTE FROM HERE ON!):
