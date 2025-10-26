@@ -3,6 +3,9 @@
 #####
 ## Run this script with ./nanopore_basecalling.sh in the terminal 
 ## after login to ramses and starting an interactive session.
+##
+## Command for interactive session:
+## srun -A virology -p interactive --gpus=4 --time=05:00:00 --mem=24gb -J nanopore.$project.${pat///}.$(date +%F) --pty bash -i
 #####
 
 # ramses: ssh mpirkl1@ramses4.itcc.uni-koeln.de
