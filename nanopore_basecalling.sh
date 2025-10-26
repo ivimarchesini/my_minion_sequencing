@@ -206,3 +206,5 @@ Rscript -e 'library(seqinr); folders <- list.files(paste0("nanopore/output/'$pro
 chown -R $USER:virology nanopore/output/$project # give write access to virology group
 chmod -R 775 nanopore/output/$project
 
+## Not clear why exit with non-zero exit code, maybe because of ramses interactive session.
+exit 1
