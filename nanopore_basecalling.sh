@@ -1,21 +1,24 @@
 #!/bin/bash
 
 #####
-## First log into ramses and the start an interactive session with
+## First log into ramses and then start an interactive session with
 ## Command for interactive session:
 ## srun -A virology -p interactive --gpus=4 --time=05:00:00 --mem=24gb -J nanopore.$project.${pat///}.$(date +%F) --pty bash -i
 ##
-## Run this script with ./nanopore_basecalling.sh in the terminal 
-## after login to ramses and starting an interactive session.
+## Find folder with nanopore script and cd into it.
+## If script is not executable make it executable with:
+## chmod +x nanopore_basecalling.sh
+##
+## Run this script with ./nanopore_basecalling.sh in the terminal.
 #####
 
-# ramses: ssh mpirkl1@ramses4.itcc.uni-koeln.de
-# minit: ssh mpirkl1@10.212.1.44
+# ramses: ssh imarches@ramses4.itcc.uni-koeln.de
+# minion: ssh imarches@10.212.1.44
 
 # check job status of current jobs in ramses:
 sacct --format="JobID,ReqCPUS,UserCPU,Elapsed,ReqMem,MaxRSS,JobName%20,Stat"
 
-## Use interactive mode by default
+## Create variable to use interactive mode by default
 interactive=1
 
 ## change into /projects/virology folder  (ramses storage)
@@ -85,12 +88,13 @@ PATH=$PATH:/home/mpirkl1/micromamba/bin/
 
 
 ## samplesheet is expected to be in the input folder with a .csv file ending
+## Upload the samplesheet to the input folder on ramses /projects/virology/nanopore/input/run_20250713 before running the script.
 samplesheet=$(echo $input*.csv)
 
 ## set devices to any CUDA (GPU) type.
 device="cuda:all"
 # Use the GPU partition with one GPU,
-partition="-p gpu --gpus=1 "
+partition="-p gpu --gpus=1"
 ## Use 16gb of memory for the job (on the node so system memory not GPU)
 mem=16gb # mem=4gb
 ## set the maximum amout of time before canceling the job.
@@ -103,7 +107,7 @@ for pat0 in ${input}*/; do
   pat=${pat0/$input/}
   ## print current folder
   echo $pat
-  ## Read barcode from samplesheet then some lines of cleaning up the output of the Rscript
+  ## Read ref from samplesheet then some lines of cleaning up the output of the Rscript
   ref=$(Rscript -e "df <- read.csv('$samplesheet');virus<-df[which(df[,'barcode']=='${pat///}'),'virus'];paste0('ref_',virus,'.fasta')")
   ref=${ref//\"}
   ref=${ref//\[}
@@ -119,7 +123,7 @@ for pat0 in ${input}*/; do
   id=${id/ /}
   ## create output folder
   mkdir $output/$id
-  ## perpare dorado command to execute
+  ## prepare dorado command to execute
   cmd="dorado/bin/dorado basecaller sup "${pat0}" -r --device "$device" -o "${output}/$id" --models-directory "${models}" --min-qscore ${qscore} --kit-name "${kit}" --reference "${ref}
   ## print ID from samplesheet
   echo $id
@@ -137,7 +141,7 @@ done
 
 ## 
 # from here on we do not need any gpus and can exit the interactive session
-# if you exit the interactive session, you have to reset all variables and the nskip the dorado part
+# if you exit the interactive session, you have to reset all variables and skip the dorado part
 
 # make msa/freq files
 
