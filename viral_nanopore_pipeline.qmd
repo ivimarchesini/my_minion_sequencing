@@ -65,8 +65,9 @@ ls
 Either copy the data with WinSCP to the computer or send it direct to Ramses using this following command:
 
 ```         
-scp -r /data/run_20250803/no_sample_id/20250803_1227_MC-115199_AYL450_752e4334/pod5_pass imarches@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/input/
 ```
+
+scp -r /data/run_20250803/no_sample_id/20250803_1227_MC-115199_AYL450_752e4334/pod5_pass imarches\@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/input/
 
 ## Log in to Ramses
 
@@ -94,3 +95,87 @@ Now are you logged into the server and can proceed with basecalling
 ```         
 sacct --format="JobID,ReqCPUS,UserCPU,Elapsed,ReqMem,MaxRSS,JobName%20,Stat"
 ```
+
+# msa/freq files
+
+1.  Resource Set-Up
+
+    ```         
+    mem=4gb 
+    time=00:30:00 
+    cores=1
+    ```
+
+These define SLURM job resources:
+
+-   `--mem=4gb`
+
+-   `--time=30 minutes`
+
+-   `--cpus-per-task=1`
+
+2.  Set imput path
+
+    ```         
+    pat0=nanopore/output/$project/barcode03/
+    ```
+
+3.  Loop
+
+4.  Bild the command
+
+```         
+cmd='bamToFreq/bin/bamToFreq -q '$phredscore' '$pat0*.bam
+```
+
+Where:
+
+-   `bamToFreq` is your frequency generator binary
+
+-   `q $phredscore` sets the minimum base quality (like 20)git
+
+-   The input BAM files are found under `$pat0`
+
+That’s the actual computation step to generate MSA/freq files. For each sample (barcode directory):
+
+-   It runs `bamToFreq` on the contained BAM file(s)
+
+-   Produces `.msa` and `.freq` files (as `bamToFreq` usually outputs both)
+
+-   Logs everything into `/scratch/virology/logs/`
+
+## Copiar los datos desde la computadora local a ramses (desde la terminal de la computadora local)
+
+```         
+scp -r "C:\Users\Viro_User\Documents\my_minion_sequencing\Input\run_20250803\no_sample_id\20250803_1227_MC-115199_AYL450_752e4334\pod5_pass" imarches@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/input/
+```
+
+Enter passphrase for key 'C:\Users\Viro\_User/.ssh/id_ed25519':
+
+i had to change the name of the folder pod5_pass to run_20250803_ivi
+
+```         
+scp "C:\Users\Viro_User\Documents\my_minion_sequencing\Sample Sheed\some_sample_sheet_run_20250803_ivi.csv" imarches@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/input/run_20250803_ivi/
+```
+
+Enter passphrase for key 'C:\Users\Viro\_User/.ssh/id_ed25519':
+
+to check if the sample sheet is okey or to change it manually:
+
+```         
+emacs some_sample_sheet_run_20250803_ivi.csv
+```
+
+flechas para moverse y escribir
+
+ctrl X crtl S para guardar
+
+ctrl X ctrl C para salir
+
+copiar el sh a ramses para que la pipeline corra automaticamente
+
+```         
+scp "C:\Users\Viro_User\Documents\my_minion_sequencing\nanopore_basecalling_ivi.sh" imarches@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/input/
+```
+
+Enter passphrase for key 'C:\Users\Viro\_User/.ssh/id_ed25519':
