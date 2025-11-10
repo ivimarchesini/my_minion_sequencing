@@ -1,6 +1,13 @@
 # get arguements
 # folder <- "nanopore/output/BKV_1/barcode01/"; reffile <- "ref_BKV.fasta"; cores <- 1; regions <- "genes_BKV.csv"; min_coverage <- 500
 
+# > packageVersion("MASS")
+# [1] ‘7.3.60’
+# > packageVersion("seqinr")
+# [1] ‘4.2.36’
+# > packageVersion("Biostrings")
+# [1] ‘2.70.3’
+
 library(seqinr)
 library(Biostrings)
 
