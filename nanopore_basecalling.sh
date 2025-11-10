@@ -82,6 +82,7 @@ module load bio/minimap2/2.26-GCCcore-12.3.0
 # module load bio/BWA/0.7.18-GCCcore-12.3.0
 # module load bio/picard/3.0.0-Java-17
 # module load bio/MAFFT/7.505-GCC-12.2.0-with-extensions
+module load lang/RStudio-Server/2023.12.1-402-gfbf-2023b-Java-11-R-4.3.3
 
 ## Expand the PATH to tell the terminal where to find some executables.
 PATH=$PATH:/home/mpirkl1/micromamba/bin/
