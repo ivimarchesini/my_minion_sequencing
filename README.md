@@ -14,3 +14,5 @@ ls
 module load bio/BEDTools/2.31.0-GCC-12.3.0
 bedtools bamtofastq -i NA18152.bam -fq NA18152.fq
 ```
+
+https://bedtools.readthedocs.io/en/latest/content/tools/bamtofastq.html
