@@ -17,6 +17,8 @@ bedtools bamtofastq -i NA18152.bam -fq NA18152.fq
 
 https://bedtools.readthedocs.io/en/latest/content/tools/bamtofastq.html
 
+https://nanoplot.bioinf.be/
+
 
 ## To check available modules
 
