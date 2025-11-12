@@ -16,3 +16,14 @@ bedtools bamtofastq -i NA18152.bam -fq NA18152.fq
 ```
 
 https://bedtools.readthedocs.io/en/latest/content/tools/bamtofastq.html
+
+
+## To check available modules
+
+
+```shell
+module avail
+```
+up and down with J K
+quit by pressing q
+
