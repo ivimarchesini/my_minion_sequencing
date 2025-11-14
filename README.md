@@ -9,10 +9,13 @@
 5. bedtools bamtofastq -i NA18152.bam -fq NA18152.fq # replace with correct names
 
 ```bash
-cd /projects/virology/nanopore/output/ivi_tests_run
+cd /projects/virology/nanopore/output/run_ivi_test/BKV_42
 ls
+BKV_42_calls_2025-11-10_T16-06-08.bam
 module load bio/BEDTools/2.31.0-GCC-12.3.0
-bedtools bamtofastq -i NA18152.bam -fq NA18152.fq
+bedtools bamtofastq \
+  -i /projects/virology/nanopore/output/run_ivi_test/BKV_42/BKV_42_calls_2025-11-10_T16-06-08.bam \
+  -fq BKV_42_calls_2025-11-10_T16-06-08.fq
 ```
 
 https://bedtools.readthedocs.io/en/latest/content/tools/bamtofastq.html
