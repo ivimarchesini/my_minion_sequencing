@@ -24,6 +24,8 @@ https://bedtools.readthedocs.io/en/latest/content/tools/bamtofastq.html
 
 https://nanoplot.bioinf.be/
 
+https://www.bioconductor.org/packages/release/bioc/html/IONiseR.html
+
 
 ## To check available modules
 
