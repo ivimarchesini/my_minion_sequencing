@@ -49,6 +49,23 @@ quit by pressing q
 ssh minit@10.212.1.44 'find /data/run_* -type d -name "pod5_pass" | sort -u'
 ```
 
+### TUI helper (select a run)
+
+I added a small Python textual TUI `select_run.py` to connect and list the
+available `pod5_pass` folders and let you pick one with the arrow keys.
+
+Install dependencies and run:
+
+```pwsh
+pip install textual paramiko
+python select_run.py
+```
+
+The app will ask for a password (leave blank to try SSH key authentication).
+When you press Enter on a selection the chosen path will be printed to stdout
+and the TUI will exit.
+
+
 ## Copy results from ramses to agkaiser
 
 
