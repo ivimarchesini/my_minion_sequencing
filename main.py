@@ -61,7 +61,37 @@ def main() -> int:
 
             print("Running:", " ".join(scp_args))
             proc = subprocess.run(scp_args)
-            return proc.returncode
+            if proc.returncode != 0:
+                return proc.returncode
+
+            # Ask whether to run the processing on the Ramses cluster now
+            reply2 = input("Run processing on Ramses now (ssh + srun)? [y/N]: ").strip().lower()
+            if reply2 != "y":
+                print("Skipping remote run. You can ssh to the cluster manually to start processing.")
+                return 0
+
+            # Determine ssh target from the DEFAULT_REMOTE_TARGET in select_run
+            # DEFAULT_REMOTE_TARGET looks like: user@host:/path/to/dir
+            try:
+                target = select_run.DEFAULT_REMOTE_TARGET.split(":", 1)[0]
+            except Exception:
+                target = "imarches@ramses4.itcc.uni-koeln.de"
+
+            # Build the run name again to be safe
+            sel_path = sel
+            seg, _ = select_run.parse_run_info(sel_path)
+            run_name = seg or "run"
+
+            # Build the remote srun command. $(date +%F) will be evaluated on the remote host.
+            remote_cmd = (
+                f"srun -A virology -p interactive --gpus=4 --time=05:00:00 --mem=24gb "
+                f"-J nanopore.{run_name}.$(date +%F) --pty bash -i -c \"mi_nanopore_basecalling {run_name}\"")
+
+            print("Running remote command on", target)
+            print(remote_cmd)
+            # Call ssh and let it handle interactive prompts (password or key)
+            rc = subprocess.run(["ssh", target, remote_cmd]).returncode
+            return rc
         except KeyboardInterrupt:
             print("Interrupted by user.")
             return 130

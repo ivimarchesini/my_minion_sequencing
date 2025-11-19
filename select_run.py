@@ -215,12 +215,12 @@ class RunSelectorApp(App):
                 src = selection_text.rstrip("/") + "/*"
                 dst = DEFAULT_REMOTE_TARGET.rstrip("/") + f"/{run_name}/"
 
-                # Suggest a local scp that connects to both remotes from this
-                # machine and transfers via the local host. This will prompt
-                # you for authentication to both hosts (minit and ramses).
-                scp_local = f"scp -3 -r {SSH_USER}@{SSH_HOST}:{src} {dst}"
-                # Keep previous remote-invoked scp as an alternate suggestion
-                scp_remote = f"ssh {SSH_USER}@{SSH_HOST} \"scp -r {src} {dst}\""
+                # Suggest using rsync to copy only new/updated files and keep
+                # folders in sync without retransmitting existing files.
+                # Local rsync (pull from minit via ssh and write to ramses path):
+                scp_local = f"rsync -av --update --progress -e ssh {SSH_USER}@{SSH_HOST}:{src} {dst}"
+                # Alternate: run rsync on the minit host to push to ramses
+                scp_remote = f"ssh {SSH_USER}@{SSH_HOST} \"rsync -av --update --progress {src} {dst}\""
                 self.suggested_scp = scp_local
 
                 # Print for users running `select_run.py` directly
