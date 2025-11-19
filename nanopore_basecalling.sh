@@ -24,17 +24,23 @@ interactive=1
 ## change into /projects/virology folder  (ramses storage)
 cd /projects/virology/
 
-## Here the scripts asks for user input of the input path above. User should write run_20250716 and confirm with RETURN
-read -p "Enter project directory: " input
-
-## If input was set the input path prepends "nanopore/input/<userinput>"
-if [ ! -d "$input" ]; then
-  input=nanopore/input/$input
+## Allow passing the project directory (run name) as first script argument.
+## Fallback to interactive prompt only if not provided.
+if [ -n "$1" ]; then
+  input="$1"
+else
+  read -p "Enter project directory: " input
 fi
 
-## Check if the directory exists (to check if user input makes sense)
+## If the provided value is not an existing directory, assume the user supplied
+## a run name and prepend the expected input folder path.
 if [ ! -d "$input" ]; then
-  echo "Directory does not exists on this path."
+  input=nanopore/input/$input/
+fi
+
+## Check if the directory exists (to validate the provided path/run name)
+if [ ! -d "$input" ]; then
+  echo "Directory does not exists on this path: $input"
   exit 1
 fi
 
