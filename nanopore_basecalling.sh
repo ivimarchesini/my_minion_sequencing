@@ -85,9 +85,13 @@ module load bio/minimap2/2.26-GCCcore-12.3.0
 # Can not load due to conflicts:
 # module load lang/RStudio-Server/2023.12.1-402-gfbf-2023b-Java-11-R-4.3.3
 module load lang/R/4.3.2-gfbf-2023a
+module load lang/Python/3.11.3-GCCcore-12.3.0
 
 ## Expand the PATH to tell the terminal where to find some executables.
 PATH=$PATH:/home/mpirkl1/micromamba/bin/
+
+# Install NanoPlot for user
+pip install NanoPlot --upgrade
 
 
 ## samplesheet is expected to be in the input folder with a .csv file ending
@@ -137,6 +141,22 @@ for pat0 in ${input}*/; do
   else
     sbatch -A virology $partition --mem=$mem -t ${time} -e /scratch/virology/logs/nanopore.$project.${pat///}.$(date +%F).error.txt -o /scratch/virology/logs/nanopore.$project.${pat///}.$(date +%F).output.txt -J nanopore.$project.${pat///}.$(date +%F) --wrap="$cmd"
   fi
+  ## Generate FastQ from BAM and run NanoPlot for quality control
+  mkdir -p $output/$id/QC/alignment
+  mkdir -p $output/$id/QC/basecalling
+
+  # Wait for BAM file to exist
+  bam_file=$(find "$output/$id/" -maxdepth 1 -name "calls_*.bam" -print -quit)
+  
+  if [[ -z "$bam_file" ]]; then
+      echo "No BAM file found!"
+      exit 1
+  fi
+
+  bedtools bamtofastq -i "$bam_file" -fq $output/$id/call.fq
+  NanoPlot --bam "$bam_file" --outdir $output/$id/QC/alignment
+  NanoPlot --fastq $output/$id/call.fq --outdir $output/$id/QC/basecalling
+
 done
 
 ## Here the script should wait for the the sbatch job to complete otherwise the second part would not work.
