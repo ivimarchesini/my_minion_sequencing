@@ -43,3 +43,15 @@ module avail
 up and down with J K
 quit by pressing q
 
+
+## List runs with pod5_pass
+```shell
+ssh minit@10.212.1.44 'find /data/run_* -type d -name "pod5_pass" | sort -u'
+```
+
+## Copy results from ramses to agkaiser
+
+
+```shell
+ scp -r imarches@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/output/run_ivi_test "\\10.212.1.222\agkaiser\reports\Diagnostik\NANOPORE"
+```
