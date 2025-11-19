@@ -65,6 +65,13 @@ The app will ask for a password (leave blank to try SSH key authentication).
 When you press Enter on a selection the chosen path will be printed to stdout
 and the TUI will exit.
 
+## Copy results from minion to ramses
+
+```shell
+scp -r /data/run_20250803/no_sample_id/20250803_1227_MC-115199_AYL450_752e4334/pod5_pass imarches@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/input/
+
+```
+
 
 ## Copy results from ramses to agkaiser
 

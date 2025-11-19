@@ -30,6 +30,9 @@ from textual import events
 SSH_HOST = "10.212.1.44"
 SSH_USER = "minit"
 FIND_CMD = "find /data/run_* -type d -name 'pod5_pass' | sort -u"
+# Default remote target used in README examples. Keep overridable by copying the
+# suggested command and editing if necessary.
+DEFAULT_REMOTE_TARGET = "imarches@ramses4.itcc.uni-koeln.de:/projects/virology/nanopore/input"
 
 
 def fetch_remote_paths(password: str | None) -> List[str]:
@@ -108,6 +111,9 @@ class RunListItem(ListItem):
 class RunSelectorApp(App):
     CSS_PATH = None
     BINDINGS = [("q","quit","Quit")]
+    # populated when user selects an entry
+    selected_path: str | None = None
+    suggested_scp: str | None = None
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=False)
@@ -201,8 +207,32 @@ class RunSelectorApp(App):
                 selection_text = ""
 
             if selection_text:
-                # Print to stdout for caller and exit
+                # Store selection and suggested command on the app instance
+                self.selected_path = selection_text
+
+                seg, _ = parse_run_info(selection_text)
+                run_name = seg or "run"
+                src = selection_text.rstrip("/") + "/*"
+                dst = DEFAULT_REMOTE_TARGET.rstrip("/") + f"/{run_name}/"
+
+                # Suggest a local scp that connects to both remotes from this
+                # machine and transfers via the local host. This will prompt
+                # you for authentication to both hosts (minit and ramses).
+                scp_local = f"scp -3 -r {SSH_USER}@{SSH_HOST}:{src} {dst}"
+                # Keep previous remote-invoked scp as an alternate suggestion
+                scp_remote = f"ssh {SSH_USER}@{SSH_HOST} \"scp -r {src} {dst}\""
+                self.suggested_scp = scp_local
+
+                # Print for users running `select_run.py` directly
                 print(selection_text)
+                print()
+                print("Suggested local scp command (runs on your machine and will prompt for both hosts):")
+                print(scp_local)
+                print()
+                print("Alternate (run scp on the minit host):")
+                print(scp_remote)
+                print()
+
                 await self.action_quit()
 
 
