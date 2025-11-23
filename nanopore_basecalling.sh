@@ -54,7 +54,7 @@ min_coverage=500
 
 ## make sure we are still in the /project/virology folder
 cd /projects/virology/
-## get project name from the current folder and variable (Clemens: not sure how this works)
+## get project name from the current folder and variable
 project=${input/nanopore\/input\//}
 project=${project/\//}
 
