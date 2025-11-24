@@ -56,7 +56,7 @@ def main() -> int:
             sel_path = sel
             seg, _ = select_run.parse_run_info(sel_path)
             run_name = seg or "run"
-            src = sel_path.rstrip("/") + "/*"
+            src = sel_path.rstrip("/") + "/"
             dst = select_run.DEFAULT_REMOTE_TARGET.rstrip("/") + f"/{run_name}/"
 
             scp_args = ["scp", "-3", "-r", f"{select_run.SSH_USER}@{select_run.SSH_HOST}:{src}", dst]

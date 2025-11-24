@@ -116,7 +116,7 @@ time=04:00:00 # time=00:30:00
 # dorado basecalling and alignment
 
 ## iterate over all subfolders int the project input directory (/projects/virology/nanopore/input/run_20250713/<barcode1-13>)
-for pat0 in ${input}*/; do
+for pat0 in ${input}barcode*/; do
   pat=${pat0/$input/}
   ## print current folder
   echo $pat
