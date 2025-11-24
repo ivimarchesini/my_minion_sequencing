@@ -33,6 +33,8 @@ https://nanoplot.bioinf.be/
 
 https://www.bioconductor.org/packages/release/bioc/html/IONiseR.html
 
+https://www.mdpi.com/2813-9038/2/3/14
+
 
 ## To check available modules
 
