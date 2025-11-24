@@ -62,7 +62,7 @@ def fetch_remote_paths(password: str | None) -> List[str]:
 
 def fetch_local_csvs() -> List[str]:
     """Return a list of CSV file paths from the user's Desktop (if present)."""
-    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop", "SampleSheets")
     patterns = ("*.csv", "*.CSV")
     files: list[str] = []
     try:
