@@ -129,6 +129,30 @@ def main() -> int:
                     return proc2.returncode
 
                 print("Copy to agkaiser completed successfully.")
+                # Add colorful ASCII art to indicate success of the complete analysis pipeline
+                try:
+                    banner = f"""
+
+                    
+
+
+    ==================  ANALYSIS COMPLETE  ==================
+    Run: {run_name}
+
+          \\   ^__^
+           \\  (oo)\\_______
+              (__)\\       )\\/\
+                  ||----w |
+                  ||     ||
+
+    All files copied to agkaiser. ✅
+    """
+                except Exception:
+                    banner = "=== ANALYSIS COMPLETE ===\nRun completed."
+
+                print(banner)
+
+                return 0
 
         except KeyboardInterrupt:
             print("Interrupted by user.")
