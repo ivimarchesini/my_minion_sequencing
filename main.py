@@ -65,6 +65,16 @@ def main() -> int:
             proc = subprocess.run(scp_args)
             if proc.returncode != 0:
                 return proc.returncode
+            
+            # Copy samplesheet CSVs if any were selected
+            for csv_path in sel_csv:
+                csv_src = csv_path
+                csv_dst = select_run.DEFAULT_REMOTE_TARGET.rstrip("/") + f"/{run_name}/"
+                csv_args = ["scp", f"{csv_src}", csv_dst]
+                print("Copying samplesheet:", " ".join(csv_args))
+                proc_csv = subprocess.run(csv_args)
+                if proc_csv.returncode != 0:
+                    return proc_csv.returncode
 
             # Ask whether to run the processing on the Ramses cluster now
             reply2 = input("Run processing on Ramses now (ssh + srun)? [y/N]: ").strip().lower()

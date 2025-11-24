@@ -29,7 +29,7 @@ from textual import events
 
 
 SSH_HOST = "10.212.1.44"
-SSH_USER = "minit"
+SSH_USER = "imarches"
 FIND_CMD = "find /data/run_* -type d -name 'pod5_pass' | sort -u"
 # Default remote target used in README examples. Keep overridable by copying the
 # suggested command and editing if necessary.
@@ -75,7 +75,13 @@ def fetch_local_csvs() -> List[str]:
                     continue
                 seen.add(key)
                 files.append(p)
-        files = sorted(files)
+        # Sort files by modification time (newest first). Use absolute path
+        # to ensure os.path.getmtime works correctly on Windows.
+        try:
+            files.sort(key=lambda p: os.path.getmtime(os.path.abspath(p)), reverse=True)
+        except Exception:
+            # Fall back to name-sorting if mtime retrieval fails for any file
+            files = sorted(files)
     except Exception:
         files = []
     return files
