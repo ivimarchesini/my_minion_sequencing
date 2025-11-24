@@ -34,6 +34,8 @@ def main() -> int:
         app.run()
 
         sel = getattr(app, "selected_path", None)
+        # CSVs selected in the TUI (from Desktop): available on the app instance
+        sel_csv = getattr(app, "sel_csv", [])
         scp_cmd = getattr(app, "suggested_scp", None)
 
         if not sel:

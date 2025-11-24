@@ -18,6 +18,7 @@ import sys
 from typing import List
 
 import os
+import glob
 import re
 import datetime
 import paramiko
@@ -57,6 +58,27 @@ def fetch_remote_paths(password: str | None) -> List[str]:
     text = out.decode(errors="replace")
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     return lines
+
+
+def fetch_local_csvs() -> List[str]:
+    """Return a list of CSV file paths from the user's Desktop (if present)."""
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    patterns = ("*.csv", "*.CSV")
+    files: list[str] = []
+    try:
+        seen: set[str] = set()
+        for pat in patterns:
+            for p in glob.glob(os.path.join(desktop, pat)):
+                # normalize case and absolute path to avoid duplicate entries
+                key = os.path.normcase(os.path.abspath(p))
+                if key in seen:
+                    continue
+                seen.add(key)
+                files.append(p)
+        files = sorted(files)
+    except Exception:
+        files = []
+    return files
 
 
 def extract_run_segment(path: str) -> str:
@@ -114,6 +136,8 @@ class RunSelectorApp(App):
     # populated when user selects an entry
     selected_path: str | None = None
     suggested_scp: str | None = None
+    # populated with list of selected CSV paths from Desktop
+    sel_csv: list[str] = []
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=False)
@@ -123,6 +147,8 @@ class RunSelectorApp(App):
             yield Button(label="Connect", id="connect")
             yield Message("")
             yield ListView(id="results")
+            yield Message("Local Desktop CSV files (press 'm' to mark/unmark, Enter to accept):")
+            yield ListView(id="csvs")
         yield Footer()
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:  # type: ignore[override]
@@ -180,7 +206,45 @@ class RunSelectorApp(App):
 
             msg[1].update("Use arrow keys to pick a folder and press Enter to accept.")
 
+            # Populate local Desktop CSV list
+            try:
+                csvs = self.query_one("#csvs", ListView)
+                csvs.clear()
+                local_csvs = fetch_local_csvs()
+                if not local_csvs:
+                    csvs.append(ListItem(Static("<no csv files on Desktop>")))
+                else:
+                    for p in local_csvs:
+                        label = os.path.basename(p)
+                        item = RunListItem(label, p)
+                        item.marked = False
+                        csvs.append(item)
+            except Exception:
+                # non-fatal UI population error
+                pass
+
     async def on_key(self, event: events.Key) -> None:  # catch Enter from user selection
+        # 'm' toggles mark on CSV list entries for multi-select
+        if event.key == "m":
+            try:
+                csvs = self.query_one("#csvs", ListView)
+                idx = getattr(csvs, "index", None)
+                if idx is None:
+                    idx = 0 if len(csvs.children) > 0 else None
+                if idx is None:
+                    return
+                item = csvs.children[idx]
+                if not hasattr(item, "marked"):
+                    item.marked = False
+                item.marked = not bool(item.marked)
+                base = os.path.basename(getattr(item, "path", "")) or getattr(item, "label", "")
+                marker = "[x] " if item.marked else "[ ] "
+                item.clear()
+                item.mount(Static(marker + base))
+            except Exception:
+                pass
+            return
+
         if event.key == "enter":
             results = self.query_one("#results", ListView)
             # Try to get the highlighted index; fallback to first child
@@ -232,6 +296,32 @@ class RunSelectorApp(App):
                 print("Alternate (run scp on the minit host):")
                 print(scp_remote)
                 print()
+
+                # Collect selected CSVs and store them on the app instance for main.py to read
+                try:
+                    sel_csvs: list[str] = []
+                    csvs = self.query_one("#csvs", ListView)
+                    for child in csvs.children:
+                        p = getattr(child, "path", None)
+                        marked = getattr(child, "marked", False)
+                        if marked and p:
+                            sel_csvs.append(p)
+                    # If none were marked, try to take the highlighted CSV
+                    if not sel_csvs:
+                        try:
+                            idx_csv = getattr(csvs, "index", None)
+                            if idx_csv is None:
+                                idx_csv = 0 if len(csvs.children) > 0 else None
+                            if idx_csv is not None:
+                                item_csv = csvs.children[idx_csv]
+                                p = getattr(item_csv, "path", None)
+                                if p:
+                                    sel_csvs.append(p)
+                        except Exception:
+                            pass
+                    self.sel_csv = sel_csvs
+                except Exception:
+                    pass
 
                 await self.action_quit()
 
