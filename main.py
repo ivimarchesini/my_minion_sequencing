@@ -103,7 +103,33 @@ def main() -> int:
             print(remote_cmd)
             # Call ssh and let it handle interactive prompts (password or key)
             rc = subprocess.run(["ssh", target, remote_cmd]).returncode
-            return rc
+
+            if rc != 0:
+                print(f"Remote command exited with code {rc}")
+                return rc
+
+            # Copy results to agkaiser
+            reply3 = input("Copy results from Ramses to agkaiser now? [y/N]: ").strip().lower()
+            if reply3 == "y":
+                # Use Ramses standard output folder for runs
+                remote_base = "/projects/virology/nanopore/output"
+
+                # remote source path for this run (on Ramses)
+                remote_src = f"{target}:{remote_base}/{run_name}/"
+
+                # Destination UNC path from README
+                agkaiser_dest = r"\\10.212.1.222\agkaiser\reports\Diagnostik\NANOPORE"
+
+                scp_args2 = ["scp", "-r", remote_src, agkaiser_dest]
+                print("Copying results to agkaiser:", " ".join(scp_args2))
+                proc2 = subprocess.run(scp_args2)
+                if proc2.returncode != 0:
+                    print(f"scp to agkaiser failed with code {proc2.returncode}")
+                    print("If scp cannot write directly to the UNC path, consider copying locally first and then using Copy-Item.")
+                    return proc2.returncode
+
+                print("Copy to agkaiser completed successfully.")
+
         except KeyboardInterrupt:
             print("Interrupted by user.")
             return 130
