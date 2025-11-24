@@ -225,7 +225,7 @@ for pat0 in ${output}/*/; do
   coverage=${coverage//\]}
   coverage=${coverage/1/}
   coverage=${coverage/ /}
-  cmd='Rscript nanopore/nanopore/nanopore_variants.r '$pat0' '$ref' '$cores' '$regions' '$coverage
+  cmd='Rscript /home/imarches/workspace/my_minion_sequencing/mi_nanopore_variants.r '$pat0' '$ref' '$cores' '$regions' '$coverage
   if (( $interactive == 1 )); then
     $cmd
   else
