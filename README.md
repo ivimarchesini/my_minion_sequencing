@@ -1,4 +1,4 @@
-# NGS Pipeline – README
+# MyMinion - NGS Pipeline
 
 ## Overview
 This repository contains an automated analysis pipeline for processing viral whole-genome sequencing data generated using the Oxford Nanopore Technologies (ONT) MinION Mk1C platform.  
