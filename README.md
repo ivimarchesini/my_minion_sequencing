@@ -5,8 +5,6 @@ This repository contains an automated analysis pipeline for processing viral who
 The workflow covers all steps from raw signal extraction to consensus generation, variant analysis, and reporting.  
 It is optimized for **viral genomes**, where high mutation rates and quasispecies complexity require maximal accuracy.
 
-The pipeline complies with common diagnostic guidelines (WHO, ECDC, CDC, national societies) regarding sequencing quality, genome completeness, minimum coverage, and base quality metrics.
-
 ---
 
 # 1. Laboratory Workflow
